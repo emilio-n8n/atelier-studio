@@ -46,3 +46,15 @@ It is a static Vite app: import the repo in Vercel (framework preset "Vite") or 
 - Share links expire when the notebook session stops; paste the new one in **Connexions**.
 - Gradio allows cross-origin calls on public links, which is what lets a static site drive the notebooks. A local `127.0.0.1` Gradio only accepts calls from a page served on localhost.
 - Weights keep their own licences (FLUX Kommunity License for Klein, etc.).
+
+## Agents (Claude Code, Codex) via MCP
+
+`mcp/server.ts` is a stdio MCP server built on the same model specs as the studio. `npm run build:mcp` bundles it into `public/atelier-mcp.mjs`, served by the site.
+
+```bash
+mkdir -p ~/.atelier && curl -fsSL https://atelier-studio-pi.vercel.app/atelier-mcp.mjs -o ~/.atelier/atelier-mcp.mjs
+claude mcp add --scope user atelier -- node ~/.atelier/atelier-mcp.mjs   # Claude Code
+codex mcp add atelier -- node ~/.atelier/atelier-mcp.mjs                 # Codex
+```
+
+Tools: `list_models` (with every parameter), `set_connection` (saves a Gradio link to `~/.atelier/connections.json`), `generate` (local paths/URLs as inputs, files saved to `./atelier-output` or `$ATELIER_OUT_DIR`), `get_job`, `cancel_job`. Links can also come from `ATELIER_FLUX_URL`, `ATELIER_QWEN_URL`, `ATELIER_MINIMAX_URL`, `ATELIER_DRAMA_URL`, `ATELIER_OMNIVOICE_URL`. The **Connexions** tab generates these commands with your current links.

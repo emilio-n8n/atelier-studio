@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run build:mcp && tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "build:mcp": "esbuild mcp/server.ts --bundle --platform=node --format=esm --target=node20 --outfile=public/atelier-mcp.mjs --banner:js=\"#!/usr/bin/env node\nimport { createRequire as __cr } from 'module'; const require = __cr(import.meta.url);\" --log-level=warning"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
@@ -21,12 +22,15 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "esbuild": "^0.28.2",
     "tailwindcss": "^4.3.3",
     "typescript": "5.9",
-    "vite": "^8.3.4"
+    "vite": "^8.3.4",
+    "zod": "^3.25.76"
   }
 }

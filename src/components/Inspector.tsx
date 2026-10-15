@@ -129,6 +129,7 @@ function Connections() {
         Le studio parle directement à l'API Gradio, depuis ton navigateur : rien ne passe par un serveur.
       </div>
       {MODELS.map((m) => <ConnectionRow key={m.id} m={m} />)}
+      <AgentsMcp />
       <div className="px-4 py-4 text-[11.5px] leading-relaxed text-faint">
         Les liens changent à chaque session. Les médias générés sont copiés dans ton navigateur (IndexedDB) : ils restent quand la session Kaggle s'arrête.
       </div>
@@ -167,6 +168,42 @@ function ConnectionRow({ m }: { m: ModelSpec }) {
           {c.state === "ok" ? <CircleCheck size={13} className="mt-px shrink-0" /> : <CircleAlert size={13} className="mt-px shrink-0" />} {c.message}
         </p>
       )}
+    </div>
+  );
+}
+
+const ENV_KEYS: Record<string, string> = { flux3: "ATELIER_FLUX_URL", qwen: "ATELIER_QWEN_URL", minimax: "ATELIER_MINIMAX_URL", drama3: "ATELIER_DRAMA_URL", omnivoice: "ATELIER_OMNIVOICE_URL" };
+
+/** Copy-paste setup so Claude Code or Codex can call the same notebooks through the Atelier MCP server. */
+function AgentsMcp() {
+  const conns = useStore((s) => s.connections);
+  const [copied, setCopied] = useState<string | null>(null);
+  const origin = typeof location !== "undefined" ? location.origin : "https://atelier-studio-pi.vercel.app";
+  const urls = MODELS.filter((m) => conns[m.id]?.url).map((m) => [ENV_KEYS[m.id], conns[m.id]!.url] as const);
+  const download = `mkdir -p ~/.atelier && curl -fsSL ${origin}/atelier-mcp.mjs -o ~/.atelier/atelier-mcp.mjs`;
+  const claude = `claude mcp add --scope user ${urls.map(([k, u]) => `-e ${k}=${u} `).join("")}atelier -- node ~/.atelier/atelier-mcp.mjs`;
+  const codex = `codex mcp add atelier ${urls.map(([k, u]) => `--env ${k}=${u} `).join("")}-- node ~/.atelier/atelier-mcp.mjs`;
+  const Block = ({ id, title, cmd }: { id: string; title: string; cmd: string }) => (
+    <div className="mt-2.5">
+      <div className="mb-1 flex items-center text-[11.5px] text-muted">
+        {title}
+        <button className="icon-btn ml-auto size-6" title="Copier" onClick={() => { void navigator.clipboard.writeText(cmd); setCopied(id); setTimeout(() => setCopied(null), 1500); }}>
+          {copied === id ? <CircleCheck size={13} className="text-ok" /> : <Clipboard size={13} />}
+        </button>
+      </div>
+      <pre className="tc overflow-x-auto whitespace-pre-wrap break-all rounded-[5px] border border-line bg-black/30 px-2.5 py-2 text-[11px] leading-relaxed text-fg">{cmd}</pre>
+    </div>
+  );
+  return (
+    <div className="border-b border-line px-4 py-4">
+      <div className="mb-1 flex items-center gap-2"><Sparkles size={14} className="text-accent" /><span className="font-medium">Agents · Claude Code / Codex (MCP)</span></div>
+      <p className="text-[11.5px] leading-relaxed text-muted">
+        Donne à ton agent les mêmes modèles : il génère images, vidéos et voix lui-même et récupère les fichiers dans <span className="tc text-fg">./atelier-output</span>. Node 20+ requis.
+        Les liens connectés ici sont déjà inclus ; quand un lien expire, demande simplement à l'agent d'utiliser le nouveau (outil <span className="tc text-fg">set_connection</span>).
+      </p>
+      <Block id="dl" title="1 · Télécharger le serveur MCP" cmd={download} />
+      <Block id="claude" title="2a · Claude Code" cmd={claude} />
+      <Block id="codex" title="2b · Codex" cmd={codex} />
     </div>
   );
 }
