@@ -1,0 +1,146 @@
+@import "tailwindcss";
+@import "@fontsource/ibm-plex-sans/latin-400.css";
+@import "@fontsource/ibm-plex-sans/latin-500.css";
+@import "@fontsource/ibm-plex-sans/latin-600.css";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+
+/* Semantic tokens: an editing-suite palette (graphite, warm paper text, one signal colour per media type). */
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-bg: #0d0e10;
+  --color-panel: #141518;
+  --color-raised: #1b1d21;
+  --color-sunken: #0a0b0c;
+  --color-line: #25282d;
+  --color-line-strong: #33373e;
+  --color-fg: #e9e6df;
+  --color-muted: #9a978f;
+  --color-faint: #615f5a;
+
+  --color-accent: #ff8a3d;
+  --color-accent-fg: #1a0f06;
+  --color-ok: #5fb3a1;
+  --color-warn: #e8b64c;
+  --color-danger: #e5664f;
+
+  --color-image: #d9a441;
+  --color-video: #5b8fd9;
+  --color-audio: #5fb3a1;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-accent) 40%, transparent);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 1.5px solid var(--color-accent);
+    outline-offset: 1px;
+  }
+}
+
+@layer components {
+  .field {
+    @apply w-full rounded-[5px] border border-line bg-sunken px-2.5 py-1.5 text-[13px] text-fg placeholder:text-faint transition-colors;
+  }
+  .field:hover {
+    @apply border-line-strong;
+  }
+  .field:focus {
+    @apply border-accent/70 outline-none;
+  }
+  .label {
+    @apply text-[11px] font-medium uppercase tracking-[0.06em] text-muted;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-[5px] border border-line bg-raised px-2.5 py-1.5 text-[12.5px] font-medium text-fg transition-colors hover:border-line-strong hover:bg-[#22252a] disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-[5px] bg-accent px-3 py-2 text-[13px] font-semibold text-accent-fg transition-[filter] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .icon-btn {
+    @apply inline-flex size-7 items-center justify-center rounded-[5px] text-muted transition-colors hover:bg-raised hover:text-fg disabled:opacity-30;
+  }
+  .tc {
+    @apply font-mono text-[12px] tabular-nums tracking-tight;
+  }
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  background: transparent;
+  width: 100%;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--color-accent) var(--p, 50%), var(--color-line-strong) var(--p, 50%));
+}
+input[type="range"]::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--color-accent) var(--p, 50%), var(--color-line-strong) var(--p, 50%));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 11px;
+  height: 11px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--color-fg);
+  border: 2px solid var(--color-bg);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-fg);
+  border: 2px solid var(--color-bg);
+}
+
+.checker {
+  background-color: #1a1b1e;
+  background-image: linear-gradient(45deg, #222428 25%, transparent 25%), linear-gradient(-45deg, #222428 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #222428 75%), linear-gradient(-45deg, transparent 75%, #222428 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+}
+
+@keyframes indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+.indeterminate {
+  animation: indeterminate 1.4s ease-in-out infinite;
+}
